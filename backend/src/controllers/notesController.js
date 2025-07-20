@@ -1,8 +1,8 @@
 import Note from "../../models/Note.js"
 
-export async function getAllNotes(req, res) {
+export async function getAllNotes(_, res) {
     try {
-      const notes = await Note.find()
+      const notes = await Note.find().sort({createdAt: -1 }) //shows the newest first
       res.status(200).json(notes)
     } catch (error) {
       console.error("error in getALlNotes controller", error)
@@ -10,12 +10,26 @@ export async function getAllNotes(req, res) {
       
     }
  }
+
+ export async function getNoteById(req,res) {
+   try {
+      const note = await Note.findById(req.params.id)
+      if(!note) return res.status(404).json({message:"note not found"})
+      res.json(note)
+   } catch (error) {
+      console.error("error in getNoteById controller", error)
+      res.status(500).json({message:"internal server error"})
+      
+   }
+ }
+
+
 export async function createNote(req, res) {
     try {
 
       const { title, content } = req.body
       console.log(title, content)
-      const note = new Note ({ title, content})
+      const note = new Note ({ title, content}) //able to access them through our middleware
       const savedNote = await note.save()
       res.status(201).json(savedNote)
 
@@ -42,7 +56,18 @@ export async function createNote(req, res) {
    }
 
  } 
- export function deleteNote(req, res) {
-    res.status(200).json({message:"Note deleted sucessfully"})
+ export async function deleteNote(req, res) {
+
+   try {
+      const deletedNote = await Note.findByIdAndDelete(req.params.id)
+      if(!deletedNote) return res.status(404).json({message: "Note not found "})
+      res.status(200).json({message:"note deleted successfully"})
+         
+      
+   } catch (error) {
+      console.error("error in deleteNote controller", error)
+      res.status(500).json({message:"internal server error", error})
+   }
+    
 
 }
