@@ -1,8 +1,16 @@
 import mongoose from "mongoose";
 
+
+// now process.env.MONGO_URI will be populated
+
+
 export const connectDB = async () => {
     try {
-        await mongoose.connect("mongodb+srv://mahauddin:OwlKxymAyMaIIWxb@cluster0.zfzxxwb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+        await mongoose.connect( 
+            
+            process.env.MONGO_URI
+
+        )
         console.log("MONGODB connected successfully")
     } catch (error) {
         console.error("error connecting to database", error)
